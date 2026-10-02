@@ -1,1685 +1,546 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ymusic</title>
-    <meta
-      name="description"
-      content="مشغل موسيقى بسيط للبحث عن الأغاني وتشغيلها وحفظ المفضلة والقوائم."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22ymusic%22,%22short_name%22:%22ymusic%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22#090a0d%22,%22theme_color%22:%22#090a0d%22}">
-    <script>
-      window.__ymusicYoutubeApiReady = false;
-      window.onYouTubeIframeAPIReady = () => {
-        window.__ymusicYoutubeApiReady = true;
-        window.__ymusicYoutubeReadyCallback?.();
-      };
-    </script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملحمة نصر أكتوبر المجيد | توثيق تاريخ العزيمة والنصر</title>
+    <!-- استيراد الخطوط وأيقونات FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-      :root {
-        color-scheme: dark;
-        --bg: #090a0d;
-        --panel: #111318;
-        --panel-2: #181b22;
-        --line: #292d36;
-        --text: #f7f8fb;
-        --muted: #9ca3b2;
-        --red: #ff3b45;
-        --red-dark: #c72637;
-        --shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
-        --glass-border: rgba(255, 255, 255, 0.1);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        min-width: 320px;
-        margin: 0;
-        background:
-          radial-gradient(
-            circle at 80% -10%,
-            rgba(255, 59, 69, 0.12),
-            transparent 32rem
-          ),
-          var(--bg);
-        color: var(--text);
-        font-family: Inter, Arial, sans-serif;
-      }
-
-      button,
-      input {
-        font: inherit;
-      }
-
-      button {
-        border: 0;
-        color: inherit;
-        cursor: pointer;
-      }
-
-      .shell {
-        width: min(1180px, 100%);
-        min-height: 100vh;
-        margin: 0 auto;
-        padding: 28px 22px 140px;
-      }
-
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        margin-bottom: 28px;
-      }
-
-      .topbar-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .brand {
-        color: var(--red);
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -1.5px;
-      }
-
-      .topbar-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .history-top-btn,
-      .auth-btn {
-        padding: 10px 15px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: var(--panel);
-        color: var(--muted);
-        white-space: nowrap;
-        transition: 160ms ease;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-      }
-
-      .history-top-btn svg {
-        width: 16px;
-        height: 16px;
-        fill: currentColor;
-      }
-
-      .history-top-btn:hover,
-      .auth-btn:hover,
-      .history-top-btn.active,
-      .auth-btn.active {
-        border-color: var(--red);
-        background: var(--red);
-        color: white;
-      }
-
-      .user-avatar-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        padding: 4px 12px 4px 4px;
-        border-radius: 999px;
-        cursor: pointer;
-        transition: 160ms ease;
-      }
-
-      .user-avatar-container:hover {
-        border-color: var(--red);
-      }
-
-      .user-avatar {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-
-      .user-name {
-        font-size: 13px;
-        color: var(--text);
-        max-width: 100px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .search {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: min(400px, 100%);
-        min-height: 46px;
-        padding: 0 15px;
-        border: 1px solid var(--line);
-        border-radius: 15px;
-        background: rgba(17, 19, 24, 0.88);
-      }
-
-      .search:focus-within {
-        border-color: var(--red);
-        box-shadow: 0 0 0 3px rgba(255, 59, 69, 0.13);
-      }
-
-      .search svg.search-icon {
-        width: 19px;
-        height: 19px;
-        color: var(--muted);
-        flex: 0 0 auto;
-      }
-
-      .search input {
-        width: 100%;
-        border: 0;
-        outline: 0;
-        background: transparent;
-        color: var(--text);
-        direction: rtl;
-        padding-left: 30px;
-      }
-
-      .search input::placeholder {
-        color: #697181;
-      }
-
-      .search-clear-btn {
-        position: absolute;
-        left: 12px;
-        background: transparent;
-        border: none;
-        color: var(--muted);
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-      }
-
-      .search-clear-btn:hover {
-        background: rgba(255, 59, 69, 0.15);
-        color: var(--red);
-      }
-
-      .search-clear-btn svg {
-        width: 16px;
-        height: 16px;
-      }
-
-      .nav {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 28px;
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-      .nav::-webkit-scrollbar {
-        display: none;
-      }
-
-      .nav button,
-      .chip,
-      .secondary-button {
-        padding: 10px 15px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: var(--panel);
-        color: var(--muted);
-        white-space: nowrap;
-        transition: 160ms ease;
-      }
-
-      .nav button:hover,
-      .chip:hover,
-      .secondary-button:hover {
-        border-color: #525967;
-        color: var(--text);
-      }
-
-      .nav button.active,
-      .chip.active {
-        border-color: var(--red);
-        background: var(--red);
-        color: white;
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr 0.8fr;
-        gap: 18px;
-        margin-bottom: 30px;
-      }
-
-      .hero-card,
-      .info-card {
-        min-height: 170px;
-        padding: 28px;
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        background: linear-gradient(
-          135deg,
-          rgba(255, 59, 69, 0.14),
-          var(--panel) 62%
-        );
-        box-shadow: var(--shadow);
-      }
-
-      .hero-card h1 {
-        max-width: 600px;
-        margin: 0 0 10px;
-        font-size: clamp(24px, 3.5vw, 42px);
-        line-height: 1.15;
-        letter-spacing: -1px;
-      }
-
-      .hero-card p,
-      .info-card p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.8;
-      }
-
-      .info-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        background: var(--panel);
-      }
-
-      .info-card strong {
-        font-size: 18px;
-      }
-
-      .notice {
-        margin-top: 14px;
-        padding: 10px 12px;
-        border: 1px solid rgba(255, 189, 89, 0.25);
-        border-radius: 12px;
-        background: rgba(255, 189, 89, 0.08);
-        color: #e7c27c;
-        font-size: 12px;
-        line-height: 1.6;
-      }
-
-      .section-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 14px;
-      }
-
-      .section-head h2 {
-        margin: 0;
-        font-size: 20px;
-      }
-
-      .section-head small {
-        color: var(--muted);
-      }
-
-      .chips {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 20px;
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-
-      .chips::-webkit-scrollbar {
-        display: none;
-      }
-
-      .songs {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
-        gap: 12px;
-      }
-
-      .song {
-        display: grid;
-        grid-template-columns: 64px 1fr auto;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-        padding: 10px;
-        border: 1px solid transparent;
-        border-radius: 17px;
-        background: rgba(17, 19, 24, 0.72);
-        transition: 160ms ease;
-      }
-
-      .song:hover,
-      .song.playing {
-        border-color: rgba(255, 59, 69, 0.45);
-        background: var(--panel-2);
-        transform: translateY(-1px);
-      }
-
-      .cover {
-        width: 64px;
-        height: 64px;
-        border-radius: 12px;
-        object-fit: cover;
-        background: #272b33;
-      }
-
-      .song-main {
-        min-width: 0;
-        cursor: pointer;
-      }
-
-      .song-title,
-      .song-artist {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .song-title {
-        margin-bottom: 5px;
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      .song-artist {
-        color: var(--muted);
-        font-size: 12px;
-      }
-
-      .song-actions {
-        display: flex;
-        gap: 2px;
-      }
-
-      .icon-button {
-        display: grid;
-        width: 35px;
-        height: 35px;
-        place-items: center;
-        border-radius: 50%;
-        background: transparent;
-        color: var(--muted);
-        transition: background 0.2s, color 0.2s;
-      }
-
-      .icon-button:hover,
-      .icon-button.active {
-        background: rgba(255, 59, 69, 0.13);
-        color: var(--red);
-      }
-
-      .empty,
-      .loading {
-        padding: 68px 20px;
-        border: 1px dashed var(--line);
-        border-radius: 20px;
-        color: var(--muted);
-        text-align: center;
-        grid-column: 1 / -1;
-      }
-
-      .loading::after {
-        content: "";
-        display: block;
-        width: 22px;
-        height: 22px;
-        margin: 14px auto 0;
-        border: 2px solid #3b404b;
-        border-top-color: var(--red);
-        border-radius: 50%;
-        animation: spin 800ms linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .player {
-        position: fixed;
-        right: 18px;
-        bottom: 18px;
-        left: 18px;
-        z-index: 10;
-        display: grid;
-        grid-template-columns: minmax(160px, 1.2fr) auto minmax(140px, 0.8fr);
-        align-items: center;
-        gap: 15px;
-        width: min(1120px, calc(100% - 36px));
-        margin: auto;
-        padding: 12px 18px;
-        border: 1px solid #343945;
-        border-radius: 22px;
-        background: rgba(17, 19, 24, 0.95);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-      }
-
-      .player-song {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-      }
-
-      .player-song img {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        object-fit: cover;
-        flex-shrink: 0;
-      }
-
-      .player-song div {
-        min-width: 0;
-      }
-
-      .player-song strong,
-      .player-song span {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .player-song strong {
-        font-size: 13px;
-        font-weight: 700;
-        margin-bottom: 3px;
-      }
-
-      .player-song span,
-      .time {
-        color: var(--muted);
-        font-size: 11px;
-      }
-
-      .player-controls {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .play-button {
-        display: grid;
-        width: 42px;
-        height: 42px;
-        place-items: center;
-        border-radius: 50%;
-        background: var(--red);
-        color: #fff;
-        transition: transform 0.1s ease, background 0.2s;
-      }
-      .play-button:active {
-        transform: scale(0.95);
-      }
-
-      .progress-wrap {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        grid-column: 1 / -1;
-        padding-top: 4px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .progress {
-        position: relative;
-        flex: 1;
-        height: 6px;
-        border-radius: 99px;
-        background: #363b46;
-        cursor: pointer;
-      }
-
-      .progress-fill {
-        width: 0;
-        height: 100%;
-        border-radius: inherit;
-        background: var(--red);
-        pointer-events: none;
-      }
-
-      .hidden-player {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 10px;
-        height: 10px;
-        opacity: 0.01;
-        pointer-events: none;
-        z-index: -1;
-      }
-
-      .playlist-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-        gap: 12px;
-      }
-
-      .playlist {
-        padding: 18px;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: var(--panel);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .playlist h3 {
-        margin: 0 0 6px;
-        font-size: 16px;
-      }
-
-      .playlist p {
-        margin: 0 0 16px;
-        color: var(--muted);
-        font-size: 13px;
-      }
-
-      .playlist-actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .glass-delete-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 9px;
-        background: rgba(255, 59, 69, 0.12);
-        border: 1px solid rgba(255, 59, 69, 0.3);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        color: #fca5a5;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-
-      .glass-delete-btn:hover {
-        background: rgba(255, 59, 69, 0.28);
-        border-color: rgba(255, 59, 69, 0.5);
-        color: #fff;
-        box-shadow: 0 0 12px rgba(255, 59, 69, 0.25);
-      }
-
-      .glass-delete-btn svg {
-        width: 18px;
-        height: 18px;
-        fill: currentColor;
-      }
-
-      .primary-button {
-        padding: 10px 16px;
-        border-radius: 12px;
-        background: var(--red);
-        color: white;
-        font-weight: 700;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      .primary-button:hover {
-        background: var(--red-dark);
-      }
-
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.65);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.25s ease;
-        z-index: 100;
-      }
-
-      .modal-overlay.active {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .modal-card {
-        background: rgba(17, 19, 24, 0.9);
-        border: 1px solid var(--glass-border);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 20px;
-        padding: 24px;
-        width: 90%;
-        max-width: 380px;
-        text-align: center;
-        transform: scale(0.9);
-        transition: transform 0.25s ease;
-        box-shadow: var(--shadow);
-      }
-
-      .modal-overlay.active .modal-card {
-        transform: scale(1);
-      }
-
-      .modal-title {
-        font-size: 16px;
-        font-weight: 600;
-        margin: 0 0 20px;
-        line-height: 1.5;
-        color: var(--text);
-      }
-
-      .modal-actions {
-        display: flex;
-        gap: 10px;
-      }
-
-      .btn-confirm, .btn-cancel {
-        flex: 1;
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s ease;
-      }
-
-      .btn-confirm {
-        background: var(--red);
-        color: white;
-      }
-
-      .btn-confirm:hover {
-        background: var(--red-dark);
-      }
-
-      .btn-cancel {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--muted);
-        border: 1px solid var(--line);
-      }
-
-      .btn-cancel:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: var(--text);
-      }
-
-      @media (max-width: 900px) {
-        .hero {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 780px) {
-        .shell {
-          padding: 18px 14px 150px;
+        :root {
+            --primary-color: #d32f2f;
+            --secondary-color: #c62828;
+            --gold-color: #f39c12;
+            --dark-bg: #0b0f19;
+            --card-bg: #111827;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(211, 47, 47, 0.3);
         }
 
-        .topbar {
-          display: block;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
         }
 
-        .topbar-left {
-          margin-bottom: 16px;
-          justify-content: space-between;
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.8;
+            overflow-x: hidden;
         }
 
-        .brand {
-          display: block;
-          margin-bottom: 0;
+        /* رأس الصفحة */
+        header {
+            background: linear-gradient(135deg, rgba(11, 15, 25, 0.95), rgba(30, 41, 59, 0.95)), url('https://upload.wikimedia.org/wikipedia/commons/4/45/Egyptian_Infantry_Crossing_Suez_Canal_1973.jpg') no-repeat center center/cover;
+            background-blend-mode: overlay;
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+            position: relative;
         }
 
-        .hero-card,
-        .info-card {
-          min-height: 0;
-          padding: 20px;
+        header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.7);
         }
 
-        .player {
-          grid-template-columns: 1fr auto;
-          gap: 12px;
-          right: 12px;
-          bottom: 12px;
-          left: 12px;
-          width: calc(100% - 24px);
-          padding: 12px 14px;
+        header h1 span {
+            color: var(--gold-color);
         }
 
-        .player-controls {
-          justify-content: flex-end;
+        header p {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto;
         }
-      }
+
+        .badge-hero {
+            display: inline-block;
+            background: rgba(211, 47, 47, 0.2);
+            border: 1px solid var(--primary-color);
+            color: #ff6b6b;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* المحتوى الرئيسي */
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            font-weight: 800;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--gold-color);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* شبكة الكروت للمحطات */
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .station-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .station-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(211, 47, 47, 0.2);
+            border-color: var(--gold-color);
+        }
+
+        .card-image-container {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .card-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .station-card:hover .card-image-container img {
+            transform: scale(1.1);
+        }
+
+        .card-number-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-color);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            color: var(--gold-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .card-summary {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-size: 0.95rem;
+            border: none;
+        }
+
+        .btn-details {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-details:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-video {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: var(--gold-color);
+            border: 1px solid var(--gold-color);
+        }
+
+        .btn-video:hover {
+            background-color: var(--gold-color);
+            color: #000;
+        }
+
+        /* نافذة التفاصيل المنبثقة (Modal) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 850px;
+            max-height: 90vh;
+            border-radius: 20px;
+            overflow-y: auto;
+            border: 1px solid var(--gold-color);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            position: relative;
+            height: 300px;
+        }
+
+        .modal-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: var(--primary-color);
+        }
+
+        .modal-body {
+            padding: 35px;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            font-size: 1.1rem;
+            color: var(--gold-color);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .modal-text {
+            font-size: 1.05rem;
+            color: var(--text-color);
+            line-height: 2;
+            margin-bottom: 30px;
+            white-space: pre-line;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .modal-video-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .modal-video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #ff0000;
+            color: #fff;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .modal-video-btn:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        /* الفوتر */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #080c14;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 80px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            .stations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <audio id="backgroundKeepAlive" loop playsinline style="display:none;"></audio>
+</head>
+<body>
 
-    <main class="shell">
-      <header class="topbar">
-        <div class="topbar-left">
-          <div class="brand">ymusic</div>
-          <div class="topbar-actions">
-            <button class="history-top-btn" id="historyTopBtn" data-view="history" title="سجل الاستماع">
-              <svg viewBox="0 0 24 24">
-                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-              </svg>
-              <span>السجل</span>
-            </button>
-            <div id="authContainer">
-              <button class="auth-btn" id="authBtn">تسجيل الدخول</button>
-            </div>
-          </div>
-        </div>
-        <form class="search" id="searchForm">
-          <svg
-            class="search-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="m20 20-4-4"></path>
-          </svg>
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="ابحث عن أغنية أو فنان..."
-          />
-          <button type="button" class="search-clear-btn" id="searchClearBtn" title="مسح النص">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-            </svg>
-          </button>
-        </form>
-      </header>
+    <!-- رأس الصفحة -->
+    <header>
+        <div class="badge-hero"><i class="fa-solid fa-shield-halved"></i> توثيق تاريخي رسمي</div>
+        <h1>ملحمة <span>نصر أكتوبر</span> المجيد</h1>
+        <p>استعراض تفصيلي لأعظم خطط العبور العسكري الحديث، من عمق الهزيمة والتخطيط الاستراتيجي إلى لحظات الفخر وتحطيم أسطورة خط بارليف.</p>
+    </header>
 
-      <nav class="nav" aria-label="التنقل">
-        <button class="active" data-view="home">الرئيسية</button>
-        <button data-view="favorites">المفضلة</button>
-        <button data-view="playlists">قوائم التشغيل</button>
-      </nav>
-
-      <section id="homeView">
-        <div class="hero">
-          <div class="hero-card">
-            <h1>موسيقى على مزاجك.</h1>
-            <p>ابحث عن الأغاني وشغّلها واحفظ المفضلة والقوائم على جهازك.</p>
-          </div>
-          <div class="hero-card">
-            <h1>شغّله على متصفح Brave</h1>
-            <p>لتجربة أفضل وبدون إعلانات مزعجة.</p>
-          </div>
-          <div class="info-card">
-            <strong id="resultLabel">الأكثر استماعًا</strong>
-            <p>المحتوى يتم تحميله من YouTube عبر خادم التطبيق.</p>
-            <div class="notice">
-              قد تظهر إعلانات YouTube الرسمية داخل المشغل لأنها تأتي من المنصة مباشرة.
-            </div>
-          </div>
-        </div>
-
-        <div class="chips" id="chips">
-          <button class="chip active" data-category="All">الكل</button>
-          <button class="chip" data-category="Pop">Pop</button>
-          <button class="chip" data-category="Hip-Hop">Hip-Hop</button>
-          <button class="chip" data-category="Rock">Rock</button>
-          <button class="chip" data-category="Jazz">Jazz</button>
-          <button class="chip" data-category="Classical">Classical</button>
-          <button class="chip" data-category="EDM">EDM</button>
-          <button class="chip" data-category="R&B">R&amp;B</button>
-        </div>
-
-        <div class="section-head">
-          <h2 id="sectionTitle">Trending</h2>
-          <small id="songCount"></small>
-        </div>
-        <div id="songs" class="songs">
-          <div class="loading">جارٍ تحميل الأغاني</div>
-        </div>
-      </section>
-
-      <section id="favoritesView" hidden>
-        <div class="section-head">
-          <h2>المفضلة</h2>
-          <small>محفوظة على هذا الجهاز</small>
-        </div>
-        <div id="favorites" class="songs"></div>
-      </section>
-
-      <section id="playlistsView" hidden>
-        <div class="section-head">
-          <h2>قوائم التشغيل</h2>
-          <button class="primary-button" id="newPlaylist">قائمة جديدة</button>
-        </div>
-        <div id="playlists" class="playlist-list"></div>
-      </section>
-
-      <section id="historyView" hidden>
-        <div class="section-head">
-          <h2>سجل الاستماع</h2>
-          <button class="secondary-button" id="clearHistoryBtn">مسح السجل</button>
-        </div>
-        <div id="historySongs" class="songs"></div>
-      </section>
-    </main>
-
-    <div id="playerDock" class="player" hidden>
-      <div class="player-song">
-        <img id="playerArtwork" alt="" />
-        <div>
-          <strong id="playerTitle"></strong>
-          <span id="playerArtist"></span>
-        </div>
-      </div>
-      <div class="player-controls">
-        <button class="icon-button" id="previousButton" title="السابق">⏮</button>
-        <button class="play-button" id="playButton" title="تشغيل أو إيقاف">▶</button>
-        <button class="icon-button" id="nextButton" title="التالي">⏭</button>
-        <button class="icon-button" id="playerPlaylist" title="إضافة إلى قائمة التشغيل">＋</button>
-        <button class="icon-button" id="playerFavorite" title="المفضلة">♡</button>
-      </div>
-      <div class="progress-wrap">
-        <span class="time" id="currentTime">0:00</span>
-        <div class="progress" id="progress">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <span class="time" id="duration">0:00</span>
-      </div>
+    <!-- محتوى المحطات -->
+    <div class="container">
+        <h2 class="section-title">محطات العبور والنصر</h2>
+        <div class="stations-grid" id="stationsGrid"></div>
     </div>
 
-    <div id="hiddenPlayer" class="hidden-player"></div>
-
-    <div class="modal-overlay" id="deletePlaylistModal">
-      <div class="modal-card">
-        <p class="modal-title">هل أنت متأكد من حذف قائمة التشغيل هذه؟</p>
-        <div class="modal-actions">
-          <button class="btn-confirm" id="confirmDeletePlaylistBtn">نعم، أنا متأكد</button>
-          <button class="btn-cancel" id="cancelDeletePlaylistBtn">لا</button>
+    <!-- نافذة التفاصيل (Modal) -->
+    <div class="modal-overlay" id="stationModal">
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <img id="modalImg" src="" alt="صورة المحطة">
+            </div>
+            <div class="modal-body">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <div class="modal-subtitle" id="modalSubtitle"></div>
+                <div class="modal-text" id="modalText"></div>
+                <div class="modal-video-section">
+                    <a id="modalVideoBtn" href="" target="_blank" class="modal-video-btn">
+                        <i class="fa-brands fa-youtube fa-xl"></i> مشاهدة الفيديو الوثائقي الحقيقي
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-      import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyDec5HEfjnmMXN7MSR3Cm6Lgv5sNlnn-AM",
-        authDomain: "ymusic-b66e7.firebaseapp.com",
-        projectId: "ymusic-b66e7",
-        storageBucket: "ymusic-b66e7.firebasestorage.app",
-        messagingSenderId: "1027415477272",
-        appId: "1:1027415477272:web:40bf45c3e1231fca7c476d",
-        measurementId: "G-HH1QN851LD"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const auth = getAuth(app);
-      const provider = new GoogleAuthProvider();
-
-      window.firebaseAuth = {
-        auth,
-        provider,
-        signInWithPopup,
-        signOut,
-        onAuthStateChanged
-      };
-    </script>
+    <!-- الفوتر -->
+    <footer>
+        <p>جميع الحقوق محفوظة - توثيق ملحمة أكتوبر المجيدة | تحيا مصر</p>
+    </footer>
 
     <script>
-      const API_BASE = "https://you-tube-music-stream--youssebasse.replit.app/api";
-      const FALLBACK_THUMBNAIL = "https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg";
+        // بيانات محطات حرب أكتوبر مع صور أرشيفية حقيقية وروابط يوتيوب وثائقية حقيقية
+        const stationsData = [
+            {
+                id: 1,
+                title: "المحطة الأولى: مرحلة الصمود والاستنزاف",
+                subtitle: "إعادة بناء القوات المسلحة (1967 - 1970)",
+                summary: "بين أنقاض هزيمة 1967، بدأت مصر في إعادة بناء جيشها من الصفر، وخاضت حرب الاستنزاف لتأكيد الإرادة وإسقاط نظرية الأمن الإسرائيلي.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/4/41/Egyptian_soldiers_attrition_war.jpg",
+                fullText: "بعد نكسة يونيو 1967، لم تستسلم مصر. بدأت القيادة السياسية والعسكرية إعادة تنظيم القوات المسلحة وإنشاء حائط الصواريخ للدفاع الجوي، وخاضت مصر 'حرب الاستنزاف' التي استنزفت العدو في سيناء، وأثبتت المقاومة الباسلة في معارك مثل رأس العش، مما أعاد الثقة الكاملة للجندي المصري وأكد استعداده للمعركة الكبرى.",
+                videoUrl: "https://www.youtube.com/watch?v=8_cUe_OQkNQ" // الفيلم الوثائقي النادر (الإرادة)
+            },
+            {
+                id: 2,
+                title: "المحطة الثانية: الخداع الاستراتيجي العبقري",
+                subtitle: "خطة التضليل والمناورات (1973)",
+                summary: "عملية خداع استراتيجي غير مسبوقة ضللت الاستخبارات الإسرائيلية والعالمية، وأوهمت العدو بأن مصر غير جاهزة للحرب نهائياً.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Anwar_Sadat_military_meeting_1973.jpg",
+                fullText: "لتحقيق عنصر المفاجأة، وضعت القيادة المصرية خطة خداع استراتيجي محكمة؛ شملت تسريح الاحتياط تدريجياً، وإعلان مواعيد وهمية للمناورات، وإشاعة نقص قطع الغيار، وترك الأضواء مضاءة في المدن، ونشر تسريبات كاذبة للصحف الأجنبية عن عدم نية مصر خوض الحرب، مما أوقع الاستخبارات الإسرائيلية في استرخاء كامل.",
+                videoUrl: "https://www.youtube.com/watch?v=trCqzAsqzMw" // فيلم حرب أكتوبر بعيون إسرائيلية (وزارة الدفاع)
+            },
+            {
+                id: 3,
+                title: "المحطة الثالثة: ساعة الصفر والعبور العظيم",
+                subtitle: "الساعة 2:00 ظهراً - 6 أكتوبر 1973",
+                summary: "انطلاق الضربة الجوية الكبرى وعمليات العبور التاريخية لآلاف المقاتلين المصريين فوق قناة السويس في معجزة عسكرية.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/4/45/Egyptian_Infantry_Crossing_Suez_Canal_1973.jpg",
+                fullText: "في تمام الساعة الثانية عصراً، انطلقت أكثر من 200 طائرة حربية مصرية لتنفذ ضربة جوية مركزة استهدفت مراكز القيادة والاتصالات ومحطات الرادار للعدو في سيناء بدقة مذهلة. في نفس اللحظة، تدفق آلاف الأبطال عبر قوارب مطاطية لتحطيم الحواجز ورفع الأعلام المصرية على الضفة الشرقية لقناة السويس.",
+                videoUrl: "https://www.youtube.com/watch?v=fIbrYs_sCAo" // فيلم الطريق إلى أكتوبر
+            },
+            {
+                id: 4,
+                title: "المحطة الرابعة: تحطيم خط بارليف المانع",
+                subtitle: "قهر أسطورة الساتر الترابي بالمياه",
+                summary: "ابتكار عبقري باستخدام مضخات المياه العالية لتجريف الساتر الترابي المنيع واختراق الحصن الذي اعتبره العدو مستحيلاً.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Bar_Lev_Line_breach_1973.jpg",
+                fullText: "كان خط بارليف يعتبر أقوى دفاع هندسي في العصر الحديث، بساتره الترابي الشاهق ودشماته المسلحة. لكن المهندسين العسكريين المصريين ابتكروا حلاً عبقرياً باستخدام مضخات مياه ذات ضغط عالٍ جداً لتجريف الرمال وصنع ثغرات في الساتر الترابي خلال ساعات قليلة، مما مكن الدبابات والمشاة من العبور الكامل.",
+                videoUrl: "https://www.youtube.com/watch?v=wM-SxFGdhW0" // مشاهد نارية وتاريخية من الأرشيف
+            },
+            {
+                id: 5,
+                title: "المحطة الخامسة: معارك الدبابات الكبرى",
+                subtitle: "معارك الدروع وصمود رأس الكوبري",
+                summary: "ملاحم بطولية خاضتها أفرع القوات المسلحة والدبابات المصرية لرد هجمات العدو المضادة وتثبيت السيطرة.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/2/22/Egyptian_tanks_Sinai_1973.jpg",
+                fullText: "حاول الجيش الإسرائيلي شن هجمات مضادة عنيفة ومكثفة لدفن رأس الكوبري المصري وإلقائنا في القناة، إلا أن أبطال سلاح الدروع والمشاة، مدعومين بصواريخ المضادة للدبابات، كبدوا العدو خسائر فادحة في المعدات والأرواح، ودمروا مئات الدبابات الإسرائيلية في معارك ضارية أسقطت أسطورة الجيش الذي لا يُقهر.",
+                videoUrl: "https://www.youtube.com/watch?v=CP3qrYXqOl0" // وثائقي حرب أكتوبر الخطير - المجموعة 73 مؤرخين
+            },
+            {
+                id: 6,
+                title: "المحطة السادسة: الانتصار ورفع العلم",
+                subtitle: "تحقيق النصر الاستراتيجي والسلام المشرف",
+                summary: "رفرف علم مصر خفاقاً فوق تراب سيناء الحبيبة، لتثبت العسكرية المصرية أن الإرادة والوطنية تصنعان المعجزات.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Egyptian_flag_raised_Sinai_1973.jpg",
+                fullText: "تكللت ملحمة أكتوبر المجيدة بكسر شوكة العدو وإجباره على الجلوس على مائدة التفاوض من موقع قوة، واسترداد أرض سيناء الغالية بالكامل سياسياً وعسكرياً. لقد أثبت الجندي المصري أن المستحيل ليس مصرياً، وأن دماء الشهداء الأبرار هي الثمن الخالد لبقاء هذا الوطن حراً أبياً.",
+                videoUrl: "https://www.youtube.com/watch?v=j_au7ZF3WgY" // وثائق النصر وأسرار الحرب - CBC & الشئون المعنوية
+            }
+        ];
 
-      const state = {
-        songs: [],
-        queue: [],
-        currentIndex: -1,
-        currentSong: null,
-        isPlaying: false,
-        duration: 0,
-        position: 0,
-        category: "All",
-        query: "",
-        view: "home",
-        activePlaylistId: null,
-        playlistToDelete: null,
-        player: null,
-        playerReady: false,
-        pendingId: null,
-        poller: null,
-        user: null
-      };
+        // عرض الكروت في الصفحة
+        const grid = document.getElementById('stationsGrid');
 
-      const $ = (id) => document.getElementById(id);
-      const favorites = () => JSON.parse(localStorage.getItem("ymusic-favorites") || "[]");
-      const playlists = () => JSON.parse(localStorage.getItem("ymusic-playlists") || "[]");
-      const historySongs = () => JSON.parse(localStorage.getItem("ymusic-history") || "[]");
-      
-      const saveFavorites = (items) => localStorage.setItem("ymusic-favorites", JSON.stringify(items));
-      const savePlaylists = (items) => localStorage.setItem("ymusic-playlists", JSON.stringify(items));
-      
-      function saveToHistory(song) {
-        let items = historySongs();
-        items = items.filter(item => item.id !== song.id);
-        items.unshift(song);
-        if (items.length > 50) items.pop();
-        localStorage.setItem("ymusic-history", JSON.stringify(items));
-        if (state.view === "history") renderHistory();
-      }
-
-      let audioCtx = null;
-      function triggerBackgroundAudio() {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === "suspended") {
-          audioCtx.resume();
-        }
-      }
-
-      function stopBackgroundAudio() {
-        if (audioCtx && audioCtx.state === "running") {
-          audioCtx.suspend();
-        }
-      }
-
-      function escapeHtml(value) {
-        return String(value ?? "").replace(
-          /[&<>"']/g,
-          (char) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#039;",
-            })[char],
-        );
-      }
-
-      function formatTime(seconds) {
-        if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-        const minutes = Math.floor(seconds / 60);
-        const remaining = Math.floor(seconds % 60)
-          .toString()
-          .padStart(2, "0");
-        return `${minutes}:${remaining}`;
-      }
-
-      function isFavorite(id) {
-        return favorites().some((song) => song.id === id);
-      }
-
-      function toggleFavorite(song) {
-        const items = favorites();
-        const index = items.findIndex((item) => item.id === song.id);
-        if (index >= 0) items.splice(index, 1);
-        else items.unshift(song);
-        saveFavorites(items);
-        renderSongs();
-        renderFavorites();
-        if (state.view === "history") renderHistory();
-        updatePlayerFavorite();
-      }
-
-      function songCard(song) {
-        const favorite = isFavorite(song.id);
-        const playing = state.currentSong?.id === song.id;
-        const inPlaylist = state.view === "home" && state.activePlaylistId;
-        const playlistAction = inPlaylist
-          ? `<button class="icon-button" data-remove-playlist="${escapeHtml(state.activePlaylistId)}" data-remove-song="${escapeHtml(song.id)}" title="إزالة من قائمة التشغيل">−</button>`
-          : `<button class="icon-button" data-add-playlist="${escapeHtml(song.id)}" title="إضافة لقائمة">＋</button>`;
-        return `
-          <article class="song ${playing ? "playing" : ""}">
-            <img class="cover" src="${escapeHtml(song.thumbnail || FALLBACK_THUMBNAIL)}" alt="" loading="lazy" />
-            <div class="song-main" data-play="${escapeHtml(song.id)}">
-              <div class="song-title">${escapeHtml(song.title)}</div>
-              <div class="song-artist">${escapeHtml(song.artist || "YouTube")}</div>
-            </div>
-            <div class="song-actions">
-              <button class="icon-button ${favorite ? "active" : ""}" data-favorite="${escapeHtml(song.id)}" title="المفضلة">${favorite ? "♥" : "♡"}</button>
-              ${playlistAction}
-            </div>
-          </article>
-        `;
-      }
-
-      function renderSongs() {
-        const songs = state.songs;
-        $("songs").innerHTML = songs.length
-          ? songs.map(songCard).join("")
-          : '<div class="empty">لم نجد أغاني. جرّب كلمة بحث أخرى.</div>';
-        $("songCount").textContent = songs.length ? `${songs.length} نتيجة` : "";
-        $("songs")
-          .querySelectorAll("[data-play]")
-          .forEach((button) => {
-            button.addEventListener("click", () => playSongById(button.dataset.play));
-          });
-        $("songs")
-          .querySelectorAll("[data-favorite]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              const song = state.songs.find((item) => item.id === button.dataset.favorite);
-              if (song) toggleFavorite(song);
-            });
-          });
-        $("songs")
-          .querySelectorAll("[data-add-playlist]")
-          .forEach((button) => {
-            button.addEventListener("click", () => addSongToPlaylist(button.dataset.addPlaylist));
-          });
-        $("songs")
-          .querySelectorAll("[data-remove-playlist]")
-          .forEach((button) => {
-            button.addEventListener("click", () =>
-              removeSongFromPlaylist(button.dataset.removePlaylist, button.dataset.removeSong)
-            );
-          });
-      }
-
-      function renderFavorites() {
-        const items = favorites();
-        $("favorites").innerHTML = items.length
-          ? items.map(songCard).join("")
-          : '<div class="empty">لم تضف أي أغنية للمفضلة بعد.</div>';
-        $("favorites")
-          .querySelectorAll("[data-play]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              const song = items.find((item) => item.id === button.dataset.play);
-              if (song) playSong(song, items);
-            });
-          });
-        $("favorites")
-          .querySelectorAll("[data-favorite]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              const song = items.find((item) => item.id === button.dataset.favorite);
-              if (song) toggleFavorite(song);
-            });
-          });
-        $("favorites")
-          .querySelectorAll("[data-add-playlist]")
-          .forEach((button) => {
-            button.addEventListener("click", () => addSongToPlaylist(button.dataset.addPlaylist));
-          });
-      }
-
-      function renderHistory() {
-        const items = historySongs();
-        $("historySongs").innerHTML = items.length
-          ? items.map(songCard).join("")
-          : '<div class="empty">سجل الاستماع فارغ حتى الآن.</div>';
-        
-        $("historySongs")
-          .querySelectorAll("[data-play]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              const song = items.find((item) => item.id === button.dataset.play);
-              if (song) playSong(song, items);
-            });
-          });
-        $("historySongs")
-          .querySelectorAll("[data-favorite]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              const song = items.find((item) => item.id === button.dataset.favorite);
-              if (song) toggleFavorite(song);
-            });
-          });
-        $("historySongs")
-          .querySelectorAll("[data-add-playlist]")
-          .forEach((button) => {
-            button.addEventListener("click", () => addSongToPlaylist(button.dataset.addPlaylist));
-          });
-      }
-
-      $("clearHistoryBtn").addEventListener("click", () => {
-        if (confirm("هل أنت متأكد من مسح سجل الاستماع بالكامل؟")) {
-          localStorage.removeItem("ymusic-history");
-          renderHistory();
-        }
-      });
-
-      function renderPlaylists() {
-        const items = playlists();
-        $("playlists").innerHTML = items.length
-          ? items
-              .map(
-                (playlist) => `
-              <article class="playlist">
-                <div>
-                  <h3>${escapeHtml(playlist.name)}</h3>
-                  <p>${playlist.songs.length} أغنية محفوظة</p>
+        stationsData.forEach((station, index) => {
+            const card = document.createElement('div');
+            card.className = 'station-card';
+            card.innerHTML = `
+                <div class="card-image-container">
+                    <img src="${station.image}" alt="${station.title}" loading="lazy">
+                    <div class="card-number-badge">${index + 1}</div>
                 </div>
-                <div class="playlist-actions">
-                  <button class="secondary-button" data-open-playlist="${escapeHtml(playlist.id)}">فتح القائمة</button>
-                  <button class="glass-delete-btn" data-delete-playlist="${escapeHtml(playlist.id)}" title="حذف القائمة">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                    </svg>
-                  </button>
+                <div class="card-content">
+                    <div>
+                        <h3 class="card-title">${station.title}</h3>
+                        <div class="card-subtitle">${station.subtitle}</div>
+                        <p class="card-summary">${station.summary}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-details" onclick="openModal(${station.id})">
+                            <i class="fa-solid fa-book-open"></i> التفاصيل
+                        </button>
+                        <a href="${station.videoUrl}" target="_blank" class="btn btn-video">
+                            <i class="fa-solid fa-video"></i> فيديو حقيقي
+                        </a>
+                    </div>
                 </div>
-              </article>
-            `
-              )
-              .join("")
-          : '<div class="empty">أنشئ أول قائمة تشغيل لك.</div>';
-        
-        $("playlists")
-          .querySelectorAll("[data-open-playlist]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              const playlist = items.find((item) => item.id === button.dataset.openPlaylist);
-              if (!playlist) return;
-              state.songs = playlist.songs;
-              state.activePlaylistId = playlist.id;
-              state.view = "home";
-              showView("home");
-              $("sectionTitle").textContent = playlist.name;
-              renderSongs();
-            });
-          });
-
-        $("playlists")
-          .querySelectorAll("[data-delete-playlist]")
-          .forEach((button) => {
-            button.addEventListener("click", () => {
-              state.playlistToDelete = button.dataset.deletePlaylist;
-              $("deletePlaylistModal").classList.add("active");
-            });
-          });
-      }
-
-      $("cancelDeletePlaylistBtn").addEventListener("click", () => {
-        $("deletePlaylistModal").classList.remove("active");
-        state.playlistToDelete = null;
-      });
-
-      $("confirmDeletePlaylistBtn").addEventListener("click", () => {
-        if (state.playlistToDelete) {
-          let items = playlists();
-          items = items.filter((p) => p.id !== state.playlistToDelete);
-          savePlaylists(items);
-          renderPlaylists();
-          $("deletePlaylistModal").classList.remove("active");
-          state.playlistToDelete = null;
-        }
-      });
-
-      $("deletePlaylistModal").addEventListener("click", (e) => {
-        if (e.target === $("deletePlaylistModal")) {
-          $("deletePlaylistModal").classList.remove("active");
-          state.playlistToDelete = null;
-        }
-      });
-
-      function addSongToPlaylist(id) {
-        const items = playlists();
-        const song =
-          state.currentSong?.id === id
-            ? state.currentSong
-            : state.songs.find((item) => item.id === id) ||
-              favorites().find((item) => item.id === id) ||
-              historySongs().find((item) => item.id === id);
-        if (!song) return;
-
-        if (!items.length) {
-          const name = prompt("لا توجد قائمة بعد. اكتب اسم أول قائمة تشغيل:");
-          if (!name?.trim()) return;
-          items.unshift({
-            id: Date.now().toString(36),
-            name: name.trim(),
-            songs: [song],
-          });
-          savePlaylists(items);
-          renderPlaylists();
-          alert(`تمت إضافة الأغنية إلى قائمة «${name.trim()}»`);
-          return;
-        }
-        const name = prompt(
-          `اكتب اسم القائمة لإضافة الأغنية إليها:\n${items.map((item) => item.name).join("، ")}`
-        );
-        if (!name) return;
-        const playlist = items.find((item) => item.name.toLowerCase() === name.trim().toLowerCase());
-        if (!playlist || !song) {
-          alert("لم يتم العثور على القائمة. اكتب اسمها كما هو ظاهر.");
-          return;
-        }
-        if (!playlist.songs.some((item) => item.id === song.id)) playlist.songs.push(song);
-        savePlaylists(items);
-        renderPlaylists();
-      }
-
-      function removeSongFromPlaylist(playlistId, songId) {
-        const items = playlists();
-        const playlist = items.find((item) => item.id === playlistId);
-        if (!playlist) return;
-        playlist.songs = playlist.songs.filter((song) => song.id !== songId);
-        savePlaylists(items);
-        state.songs = playlist.songs;
-        renderSongs();
-        renderPlaylists();
-      }
-
-      function createPlaylist() {
-        const name = prompt("اسم قائمة التشغيل:");
-        if (!name?.trim()) return;
-        const items = playlists();
-        items.unshift({
-          id: Date.now().toString(36),
-          name: name.trim(),
-          songs: [],
+            `;
+            grid.appendChild(card);
         });
-        savePlaylists(items);
-        renderPlaylists();
-        showView("playlists");
-      }
 
-      function showView(view) {
-        state.view = view;
-        document.querySelectorAll(".nav button, .history-top-btn").forEach((button) => {
-          button.classList.toggle("active", button.dataset.view === view);
-        });
-        $("homeView").hidden = view !== "home";
-        $("favoritesView").hidden = view !== "favorites";
-        $("playlistsView").hidden = view !== "playlists";
-        $("historyView").hidden = view !== "history";
-        if (view === "favorites") renderFavorites();
-        if (view === "playlists") renderPlaylists();
-        if (view === "history") renderHistory();
-      }
+        // دوال النافذة المنبثقة (Modal)
+        const modal = document.getElementById('stationModal');
+        const modalImg = document.getElementById('modalImg');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSubtitle = document.getElementById('modalSubtitle');
+        const modalText = document.getElementById('modalText');
+        const modalVideoBtn = document.getElementById('modalVideoBtn');
 
-      function initAuth() {
-        const { auth, provider, signInWithPopup, signOut, onAuthStateChanged } = window.firebaseAuth;
-        
-        onAuthStateChanged(auth, (user) => {
-          state.user = user;
-          updateAuthUI();
-        });
-      }
-
-      function updateAuthUI() {
-        const container = $("authContainer");
-        if (state.user) {
-          container.innerHTML = `
-            <div class="user-avatar-container" id="userProfileBtn" title="تسجيل الخروج">
-              <img src="${escapeHtml(state.user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + state.user.email)}" alt="صورة الحساب" class="user-avatar">
-              <span class="user-name">${escapeHtml(state.user.displayName || state.user.email.split('@')[0])}</span>
-            </div>
-          `;
-          $("userProfileBtn").addEventListener("click", async () => {
-            if (confirm("هل تريد تسجيل الخروج؟")) {
-              try {
-                await window.firebaseAuth.signOut(window.firebaseAuth.auth);
-              } catch (e) {
-                console.error(e);
-              }
+        function openModal(id) {
+            const station = stationsData.find(s => s.id === id);
+            if (station) {
+                modalImg.src = station.image;
+                modalTitle.textContent = station.title;
+                modalSubtitle.textContent = station.subtitle;
+                modalText.textContent = station.fullText;
+                modalVideoBtn.href = station.videoUrl;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
             }
-          });
-        } else {
-          container.innerHTML = `<button class="auth-btn" id="authBtn">تسجيل الدخول</button>`;
-          $("authBtn").addEventListener("click", async () => {
-            try {
-              const { auth, provider, signInWithPopup } = window.firebaseAuth;
-              await signInWithPopup(auth, provider);
-            } catch (error) {
-              console.error("Auth error:", error);
-              alert("حدث خطأ أثناء تسجيل الدخول. تأكد من إعدادات Firebase Authentication.");
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
             }
-          });
         }
-      }
-
-      async function loadSongs(query = "", category = "All") {
-        $("songs").innerHTML = '<div class="loading">جارٍ تحميل الأغاني</div>';
-        $("sectionTitle").textContent = query || category !== "All" ? "نتائج البحث" : "Trending";
-        const params = query || (category !== "All" ? `${category} music` : "");
-        const endpoint = params ? `/music/search?q=${encodeURIComponent(params)}` : "/music/trending";
-        try {
-          const response = await fetch(API_BASE + endpoint);
-          if (!response.ok) throw new Error("API error");
-          const data = await response.json();
-          state.songs = Array.isArray(data.songs) ? data.songs : [];
-        } catch {
-          state.songs = [];
-          $("songs").innerHTML = '<div class="empty">تعذر الاتصال بالخادم. أعد المحاولة.</div>';
-          return;
-        }
-        renderSongs();
-      }
-
-      function updatePlayer() {
-        const song = state.currentSong;
-        $("playerDock").hidden = !song;
-        if (!song) return;
-        $("playerArtwork").src = song.thumbnail || FALLBACK_THUMBNAIL;
-        $("playerTitle").textContent = song.title;
-        $("playerArtist").textContent = song.artist || "YouTube";
-        $("playButton").textContent = state.isPlaying ? "❚❚" : "▶";
-        $("currentTime").textContent = formatTime(state.position);
-        $("duration").textContent = formatTime(state.duration);
-        $("progressFill").style.width = `${state.duration ? Math.min(100, (state.position / state.duration) * 100) : 0}%`;
-        
-        updatePlayerFavorite();
-        updateMediaSessionState();
-      }
-
-      function updatePlayerFavorite() {
-        const active = state.currentSong && isFavorite(state.currentSong.id);
-        $("playerFavorite").textContent = active ? "♥" : "♡";
-        $("playerFavorite").classList.toggle("active", !!active);
-      }
-
-      function setupMediaSession() {
-        if (!("mediaSession" in navigator)) return;
-
-        navigator.mediaSession.setActionHandler("play", () => {
-          triggerBackgroundAudio();
-          if (state.player && typeof state.player.playVideo === "function") {
-            state.player.playVideo();
-            state.isPlaying = true;
-            updatePlayer();
-          }
-        });
-
-        navigator.mediaSession.setActionHandler("pause", () => {
-          stopBackgroundAudio();
-          if (state.player && typeof state.player.pauseVideo === "function") {
-            state.player.pauseVideo();
-            state.isPlaying = false;
-            updatePlayer();
-          }
-        });
-
-        navigator.mediaSession.setActionHandler("previoustrack", () => {
-          playPrevious();
-        });
-
-        navigator.mediaSession.setActionHandler("nexttrack", () => {
-          playNext();
-        });
-
-        try {
-          navigator.mediaSession.setActionHandler("seekto", (details) => {
-            if (details.seekTime !== undefined && state.player) {
-              state.player.seekTo(details.seekTime, true);
-              state.position = details.seekTime;
-              updatePlayer();
-            }
-          });
-        } catch (e) {}
-      }
-
-      function updateMediaSessionMetadata(song) {
-        if (!("mediaSession" in navigator) || !song) return;
-
-        const artworkUrl = song.thumbnail || FALLBACK_THUMBNAIL;
-
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: song.title || "ymusic",
-          artist: song.artist || "YouTube",
-          album: "ymusic",
-          artwork: [
-            { src: artworkUrl, sizes: "96x96", type: "image/jpeg" },
-            { src: artworkUrl, sizes: "128x128", type: "image/jpeg" },
-            { src: artworkUrl, sizes: "192x192", type: "image/jpeg" },
-            { src: artworkUrl, sizes: "512x512", type: "image/jpeg" },
-          ],
-        });
-      }
-
-      function updateMediaSessionState() {
-        if (!("mediaSession" in navigator)) return;
-
-        navigator.mediaSession.playbackState = state.isPlaying ? "playing" : "paused";
-
-        if (state.duration > 0 && "setPositionState" in navigator.mediaSession) {
-          try {
-            navigator.mediaSession.setPositionState({
-              duration: state.duration,
-              playbackRate: 1,
-              position: Math.min(state.position, state.duration),
-            });
-          } catch (e) {}
-        }
-      }
-
-      function stopPolling() {
-        if (state.poller) {
-          clearInterval(state.poller);
-          state.poller = null;
-        }
-      }
-
-      function startPolling() {
-        stopPolling();
-        state.poller = setInterval(() => {
-          if (!state.player || !state.isPlaying) return;
-          try {
-            state.position = state.player.getCurrentTime() || 0;
-            state.duration = state.player.getDuration() || state.duration;
-            updatePlayer();
-          } catch {}
-        }, 500);
-      }
-
-      function onYouTubeIframeAPIReady() {
-        state.player = new YT.Player("hiddenPlayer", {
-          width: "10",
-          height: "10",
-          playerVars: {
-            autoplay: 1,
-            controls: 0,
-            disablekb: 1,
-            fs: 0,
-            iv_load_policy: 3,
-            playsinline: 1,
-            rel: 0,
-          },
-          events: {
-            onReady: () => {
-              state.playerReady = true;
-              if (state.pendingId) {
-                state.player.loadVideoById(state.pendingId);
-                state.pendingId = null;
-              }
-            },
-            onStateChange: (event) => {
-              if (event.data === YT.PlayerState.PLAYING) {
-                state.isPlaying = true;
-                triggerBackgroundAudio();
-                startPolling();
-              } else if (event.data === YT.PlayerState.PAUSED) {
-                state.isPlaying = false;
-                stopBackgroundAudio();
-                stopPolling();
-              } else if (event.data === YT.PlayerState.ENDED) {
-                state.isPlaying = false;
-                stopPolling();
-                playNext();
-              }
-              updatePlayer();
-            },
-            onError: () => {
-              state.isPlaying = false;
-              stopBackgroundAudio();
-              stopPolling();
-              updatePlayer();
-            },
-          },
-        });
-      }
-
-      function playSong(song, queue = state.songs) {
-        triggerBackgroundAudio();
-        state.currentSong = song;
-        state.queue = queue;
-        state.currentIndex = queue.findIndex((item) => item.id === song.id);
-        state.position = 0;
-        state.duration = 0;
-        state.isPlaying = true;
-
-        saveToHistory(song);
-
-        updateMediaSessionMetadata(song);
-        updatePlayer();
-
-        if (state.playerReady) {
-          state.player.loadVideoById(song.id);
-        } else {
-          state.pendingId = song.id;
-        }
-      }
-
-      function playSongById(id) {
-        const song = state.songs.find((item) => item.id === id);
-        if (song) playSong(song, state.songs);
-      }
-
-      function playNext() {
-        if (!state.queue.length) return;
-        const nextIndex = (state.currentIndex + 1) % state.queue.length;
-        const next = state.queue[nextIndex];
-        if (next) playSong(next, state.queue);
-      }
-
-      function playPrevious() {
-        if (!state.queue.length) return;
-        if (state.position > 3 && state.player) {
-          state.player.seekTo(0, true);
-          state.position = 0;
-          updatePlayer();
-          return;
-        }
-        const prevIndex = (state.currentIndex - 1 + state.queue.length) % state.queue.length;
-        const previous = state.queue[prevIndex];
-        if (previous) playSong(previous, state.queue);
-      }
-
-      const searchInput = $("searchInput");
-      const searchClearBtn = $("searchClearBtn");
-
-      searchInput.addEventListener("input", () => {
-        searchClearBtn.style.display = searchInput.value.length > 0 ? "flex" : "none";
-      });
-
-      searchClearBtn.addEventListener("click", () => {
-        searchInput.value = "";
-        searchClearBtn.style.display = "none";
-        searchInput.focus();
-        state.query = "";
-        loadSongs("", state.category);
-      });
-
-      $("searchForm").addEventListener("submit", (event) => {
-        event.preventDefault();
-        state.query = searchInput.value.trim();
-        state.activePlaylistId = null;
-        loadSongs(state.query, state.category);
-      });
-
-      document.querySelectorAll(".nav button, .history-top-btn").forEach((button) => {
-        button.addEventListener("click", () => {
-          const view = button.dataset.view;
-          if (view === "home" && state.activePlaylistId) {
-            state.activePlaylistId = null;
-            loadSongs(state.query, state.category);
-          }
-          showView(view);
-        });
-      });
-
-      document.querySelectorAll(".chip").forEach((button) => {
-        button.addEventListener("click", () => {
-          document.querySelectorAll(".chip").forEach((item) => item.classList.remove("active"));
-          button.classList.add("active");
-          state.category = button.dataset.category;
-          state.query = "";
-          state.activePlaylistId = null;
-          searchInput.value = "";
-          searchClearBtn.style.display = "none";
-          loadSongs("", state.category);
-        });
-      });
-
-      $("newPlaylist").addEventListener("click", createPlaylist);
-
-      $("playButton").addEventListener("click", () => {
-        if (!state.player || !state.currentSong) return;
-        if (state.isPlaying) {
-          state.player.pauseVideo();
-          stopBackgroundAudio();
-        } else {
-          state.player.playVideo();
-          triggerBackgroundAudio();
-        }
-      });
-
-      $("nextButton").addEventListener("click", playNext);
-      $("previousButton").addEventListener("click", playPrevious);
-      $("playerPlaylist").addEventListener("click", () => {
-        if (state.currentSong) addSongToPlaylist(state.currentSong.id);
-      });
-      $("playerFavorite").addEventListener("click", () => {
-        if (state.currentSong) toggleFavorite(state.currentSong);
-      });
-      $("progress").addEventListener("click", (event) => {
-        if (!state.duration || !state.player) return;
-        const rect = event.currentTarget.getBoundingClientRect();
-        const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-        state.player.seekTo(ratio * state.duration, true);
-        state.position = ratio * state.duration;
-        updatePlayer();
-      });
-
-      window.__ymusicYoutubeReadyCallback = onYouTubeIframeAPIReady;
-      if (window.__ymusicYoutubeApiReady) onYouTubeIframeAPIReady();
-
-      setTimeout(initAuth, 500);
-      setupMediaSession();
-      renderFavorites();
-      renderPlaylists();
-      renderHistory();
-      loadSongs();
     </script>
-  </body>
+</body>
 </html>
