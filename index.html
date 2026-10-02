@@ -88,13 +88,13 @@
             background: linear-gradient(135deg, #111827, #1f2937);
             border: 2px solid var(--gold-color);
             border-radius: 16px;
-            padding: 25px;
+            padding: 30px 25px;
             text-align: center;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
             animation: glowCard 3s infinite alternate;
         }
@@ -104,9 +104,26 @@
             100% { border-color: #ff6b6b; box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4); }
         }
 
-        .developer-card i {
-            font-size: 3rem;
-            color: var(--gold-color);
+        .developer-img-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--gold-color);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+            flex-shrink: 0;
+            background-color: #1f2937;
+        }
+
+        .developer-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .developer-info {
+            text-align: right;
+            flex-grow: 1;
         }
 
         .developer-info h3 {
@@ -506,6 +523,13 @@
             header h1 {
                 font-size: 2.2rem;
             }
+            .developer-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .developer-info {
+                text-align: center;
+            }
             .stations-grid {
                 grid-template-columns: 1fr;
             }
@@ -524,7 +548,9 @@
     <!-- كارت بيانات المطور (يوسف) -->
     <div class="developer-badge-container">
         <div class="developer-card">
-            <i class="fa-solid fa-graduation-cap"></i>
+            <div class="developer-img-container">
+                <img src="myphoto.jpg" alt="صورة المطور يوسف">
+            </div>
             <div class="developer-info">
                 <h3>تطوير الطالب: <span>يوسف باسم جمال نصر-الدين محمد</span></h3>
                 <p>مدرسة طلائع العجمي الرسمية للغات | الصف السادس الابتدائي</p>
