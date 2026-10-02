@@ -36,7 +36,7 @@
 
         /* رأس الصفحة */
         header {
-            background: linear-gradient(135deg, rgba(11, 15, 25, 0.95), rgba(30, 41, 59, 0.95)), url('war3.jpg') no-repeat center center/cover;
+            background: linear-gradient(135deg, rgba(11, 15, 25, 0.95), rgba(30, 41, 59, 0.95)), url('war3.jpeg') no-repeat center center/cover;
             background-blend-mode: overlay;
             padding: 80px 20px;
             text-align: center;
@@ -75,10 +75,140 @@
             letter-spacing: 1px;
         }
 
+        /* كارت بيانات المطور (يوسف) */
+        .developer-badge-container {
+            max-width: 850px;
+            margin: -35px auto 35px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .developer-card {
+            background: linear-gradient(135deg, #111827, #1f2937);
+            border: 2px solid var(--gold-color);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            animation: glowCard 3s infinite alternate;
+        }
+
+        @keyframes glowCard {
+            0% { border-color: var(--gold-color); box-shadow: 0 10px 25px rgba(243, 156, 18, 0.2); }
+            100% { border-color: #ff6b6b; box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4); }
+        }
+
+        .developer-card i {
+            font-size: 3rem;
+            color: var(--gold-color);
+        }
+
+        .developer-info h3 {
+            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .developer-info h3 span {
+            color: var(--gold-color);
+        }
+
+        .developer-info p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .developer-info .supervisor {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        /* كارت إهداء الشهيد */
+        .dedication-container {
+            max-width: 850px;
+            margin: 50px auto 20px auto;
+            padding: 0 20px;
+        }
+
+        .dedication-card {
+            background: linear-gradient(135deg, #1f1313, #111827);
+            border: 2px dashed var(--primary-color);
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(211, 47, 47, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dedication-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .grandpa-img-container {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--gold-color);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+            margin-bottom: 5px;
+            background-color: #1f2937;
+        }
+
+        .grandpa-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .dedication-card h3 {
+            font-size: 1.4rem;
+            color: var(--gold-color);
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .dedication-card h4 {
+            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .dedication-card h4 span {
+            color: #ff6b6b;
+        }
+
+        .dedication-card p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
         /* المحتوى الرئيسي */
         .container {
             max-width: 1200px;
-            margin: 50px auto;
+            margin: 30px auto 50px auto;
             padding: 0 20px;
         }
 
@@ -368,7 +498,7 @@
             background: #080c14;
             color: var(--text-muted);
             border-top: 1px solid var(--border-color);
-            margin-top: 80px;
+            margin-top: 50px;
             font-size: 0.95rem;
         }
 
@@ -391,10 +521,34 @@
         <p>استعراض تفصيلي لأعظم خطط العبور العسكري الحديث، من عمق الهزيمة والتخطيط الاستراتيجي إلى لحظات الفخر وتحطيم أسطورة خط بارليف.</p>
     </header>
 
+    <!-- كارت بيانات المطور (يوسف) -->
+    <div class="developer-badge-container">
+        <div class="developer-card">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <div class="developer-info">
+                <h3>تطوير الطالب: <span>يوسف باسم جمال نصر-الدين محمد</span></h3>
+                <p>مدرسة طلائع العجمي الرسمية للغات | الصف السادس الابتدائي</p>
+                <p class="supervisor">تحت إشراف / أستاذة إنجي الأمير</p>
+            </div>
+        </div>
+    </div>
+
     <!-- محتوى المحطات -->
     <div class="container">
         <h2 class="section-title">محطات العبور والنصر</h2>
         <div class="stations-grid" id="stationsGrid"></div>
+    </div>
+
+    <!-- كارت إهداء الشهيد -->
+    <div class="dedication-container">
+        <div class="dedication-card">
+            <div class="grandpa-img-container">
+                <img src="mygrandpa.jpg" alt="صورة الشهيد العقيد أحمد صادق">
+            </div>
+            <h3>إهداء إلى روح جدي العظيم</h3>
+            <h4>الشهيد / عقيد / <span>أحمد صادق</span></h4>
+            <p>الجيش الثاني - الدفاع الجوي</p>
+        </div>
     </div>
 
     <!-- نافذة التفاصيل (Modal) -->
@@ -423,7 +577,7 @@
     </footer>
 
     <script>
-        // بيانات محطات حرب أكتوبر مع ربط الصور المحلية بالترتيب (war1.jpg حتى war6.jpg)
+        // بيانات محطات حرب أكتوبر مع ربط الصور المحلية بالترتيب (war1.jpeg حتى war6.jpeg)
         const stationsData = [
             {
                 id: 1,
@@ -454,7 +608,7 @@
             },
             {
                 id: 4,
-                title: "المحطة الرابعة: تحطيم خط بارليف المنيع",
+                title: "المحطة الرابعة: تحطيم خط بارليف المانع",
                 subtitle: "قهر أسطورة الساتر الترابي بالمياه",
                 summary: "ابتكار عبقري باستخدام مضخات المياه العالية لتجريف الساتر الترابي المنيع واختراق الحصن الذي اعتبره العدو مستحيلاً.",
                 image: "war4.jpeg",
